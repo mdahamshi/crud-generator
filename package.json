@@ -1,5 +1,5 @@
 {
-  "name": "sb-sb-crud-gen",
+  "name": "sb-crud-gen",
   "version": "1.0.3",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "test": "jest"
   },
   "bin": {
-    "sb-sb-crud-gen": "./index.js"
+    "sb-crud-gen": "./index.js"
   },
   "author": "Mohammad Dahamshi",
   "license": "MIT",
@@ -29,7 +29,7 @@
     "crud",
     "rest-api",
     "crud-generator",
-    "sb-sb-crud-gen",
+    "sb-crud-gen",
     "sb-bin"
   ],
   "dependencies": {

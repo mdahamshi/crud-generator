@@ -19,7 +19,7 @@ A simple CLI tool to **generate CRUD boilerplate code** for a given model with c
 ## 🛠 Installation
 
 ```bash
-npm install -g sb-sb-crud-gen
+npm install -g sb-crud-gen
 ````
 
 > If you’re developing locally, use:
