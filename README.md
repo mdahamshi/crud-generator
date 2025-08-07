@@ -57,7 +57,7 @@ src/
 │   └── authorRoutes.js
 └── db/
     └── queries/
-        └── author.sql
+        └── author..js
 ```
 
 ---
