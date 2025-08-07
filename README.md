@@ -1,9 +1,5 @@
-Here’s a simple `README.md` for your CLI tool `crud-gen` that dynamically generates CRUD files using custom fields:
 
----
-
-````md
-# crud-gen
+# crud-generator
 
 A simple CLI tool to **generate CRUD boilerplate code** for a given model with customizable fields.
 
@@ -23,7 +19,7 @@ A simple CLI tool to **generate CRUD boilerplate code** for a given model with c
 ## 🛠 Installation
 
 ```bash
-npm install -g crud-gen
+npm install -g crud-generator
 ````
 
 > If you’re developing locally, use:
@@ -84,11 +80,8 @@ Supported field types include (but are not limited to):
 
 ## 📄 License
 
-MIT © YourName
 
-```
+This project is open-source and available under the [MIT License](https://mit-license.org/).
 
----
 
-Would you like to add sections for contributing, Prisma integration, or custom templates?
-```
+Feel free to explore either tool to boost your backend or frontend development speed!
