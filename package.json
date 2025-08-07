@@ -1,0 +1,41 @@
+{
+  "name": "crud-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Mohammad Dahamshi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mdahamshi/crud-generator.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "bin",
+    "component",
+    "sarawebs",
+    "server",
+    "express",
+    "node",
+    "databse",
+    "crud",
+    "rest-api",
+    "postgres",
+    "sb-gen",
+    "sb-gen-api",
+    "sb-gen-server",
+    "sb-bin"
+  ],
+  "dependencies": {
+    "commander": "^14.0.0",
+    "ejs": "^3.1.10"
+  },
+  "devDependencies": {
+    "jest": "^30.0.5"
+  }
+}
