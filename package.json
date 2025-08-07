@@ -1,5 +1,5 @@
 {
-  "name": "crud-generator",
+  "name": "crud-gen",
   "version": "1.0.2",
   "description": "",
   "main": "index.js",
@@ -29,6 +29,7 @@
     "crud",
     "rest-api",
     "crud-generator",
+    "crud-gen",
     "sb-bin"
   ],
   "dependencies": {
