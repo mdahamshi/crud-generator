@@ -144,7 +144,7 @@ export async function query(text, params) {
 }
 
 program
-  .name('crud-gen')
+  .name('sb-crud-gen')
   .description('CRUD generator CLI tool')
   .version('1.0.0');
 

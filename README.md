@@ -19,7 +19,7 @@ A simple CLI tool to **generate CRUD boilerplate code** for a given model with c
 ## 🛠 Installation
 
 ```bash
-npm install -g crud-generator
+npm install -g sb-sb-crud-gen
 ````
 
 > If you’re developing locally, use:
@@ -33,14 +33,14 @@ npm install -g crud-generator
 ## 🚀 Usage
 
 ```bash
-crud-gen create <ModelName> [fields...]
+sb-crud-gen create <ModelName> [fields...]
 ```
 
 ### 📌 Examples
 
 ```bash
-crud-gen create Author name:string age:int
-crud-gen create Post title:string content:text published:boolean
+sb-crud-gen create Author name:string age:int
+sb-crud-gen create Post title:string content:text published:boolean
 ```
 
 ---
