@@ -6,6 +6,9 @@
   "scripts": {
     "test": "jest"
   },
+  "bin": {
+    "crud-gen": "./index.js"
+  },
   "author": "Mohammad Dahamshi",
   "license": "MIT",
   "repository": {
@@ -17,18 +20,15 @@
   },
   "keywords": [
     "bin",
-    "component",
     "sarawebs",
     "server",
+    "ejs",
     "express",
     "node",
     "databse",
     "crud",
     "rest-api",
-    "postgres",
-    "sb-gen",
-    "sb-gen-api",
-    "sb-gen-server",
+    "crud-generator",
     "sb-bin"
   ],
   "dependencies": {

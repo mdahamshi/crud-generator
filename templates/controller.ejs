@@ -22,8 +22,8 @@ export const get<%= ModelName %>ById = async (req, res, next) => {
 
 export const create<%= ModelName %> = async (req, res, next) => {
   try {
-    const { name, email } = req.body; // customize fields
-    const newItem = await db.<%= modelName %>.create([name, email]);
+    const <%= controllerDestruct %> = req.body;
+    const newItem = await db.<%= modelName %>.create([<%= fieldList.join(', ') %>]);
     res.status(201).json(newItem);
   } catch (error) {
     next(error);
@@ -33,13 +33,14 @@ export const create<%= ModelName %> = async (req, res, next) => {
 export const update<%= ModelName %> = async (req, res, next) => {
   const id = parseInt(req.params.id);
   try {
-    const { name, email } = req.body; // customize fields
-    const updatedItem = await db.<%= modelName %>.update([name, email, id]);
+    const <%= controllerDestruct %> = req.body;
+    const updatedItem = await db.<%= modelName %>.update([<%= fieldList.join(', ') %>, id]);
     res.json(updatedItem);
   } catch (error) {
     next(error);
   }
 };
+
 
 export const delete<%= ModelName %> = async (req, res, next) => {
   const id = parseInt(req.params.id);

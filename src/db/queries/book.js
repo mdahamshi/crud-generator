@@ -1,14 +1,14 @@
 import { query } from '../pool.js';
 
 const queries = {
-  getAll: 'SELECT * FROM <%= modelPlural %> ORDER BY id ASC',
-  getById: 'SELECT * FROM <%= modelPlural %> WHERE id = $1',
-  create: 'INSERT INTO <%= modelPlural %> (<%= fieldNames %>) VALUES (<%= placeholders %>) RETURNING *',
-  update: 'UPDATE <%= modelPlural %> SET <%= updateSets %> WHERE id = $<%= updateIndex %> RETURNING *',
-  delete: 'DELETE FROM <%= modelPlural %> WHERE id = $1'
+  getAll: 'SELECT * FROM books ORDER BY id ASC',
+  getById: 'SELECT * FROM books WHERE id = $1',
+  create: 'INSERT INTO books () VALUES () RETURNING *',
+  update: 'UPDATE books SET  WHERE id = $1 RETURNING *',
+  delete: 'DELETE FROM books WHERE id = $1'
 };
 
-const <%= modelName %> = {
+const book = {
   getAll: async (params = []) => {
     const res = await query(queries.getAll, params);
     return res.rows;
@@ -31,4 +31,4 @@ const <%= modelName %> = {
   }
 };
 
-export default <%= modelName %>;
+export default book;

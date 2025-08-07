@@ -5,15 +5,21 @@ import path from 'path';
 import ejs from 'ejs';
 import readline from 'readline';
 
+function parseFields(fieldArgs) {
+  return fieldArgs.map(fld => {
+    const [name, type = 'string'] = fld.split(':');
+    return { name, type };
+  });
+}
 
-async function createModel(modelNameRaw) {
+async function createModel(modelNameRaw, fieldArgs = []) {
   const modelName = modelNameRaw.toLowerCase();
   const ModelName = modelNameRaw[0].toUpperCase() + modelNameRaw.slice(1);
   const modelPlural = modelName + 's';
+  const fields = parseFields(fieldArgs);
 
   const baseDir = process.cwd();
 
-  // Paths for output files
   const paths = {
     routes: path.join(baseDir, 'src/routes', `${modelPlural}.js`),
     controller: path.join(baseDir, 'src/controllers', `${modelName}Controller.js`),
@@ -23,30 +29,24 @@ async function createModel(modelNameRaw) {
     pool: path.join(baseDir, 'src/db/pool.js'),
   };
 
-  // Check if files already exist
   for (const filePath of [paths.routes, paths.controller, paths.query]) {
     try {
       await fs.access(filePath);
       console.error(`❌ File already exists: ${filePath}`);
       process.exit(1);
-    } catch {
-      // file does not exist, OK
-    }
+    } catch { }
   }
 
-  // Make sure directories exist
-  for (const dir of [path.dirname(paths.routes), path.dirname(paths.controller), path.dirname(paths.query), path.dirname(paths.db), path.dirname(paths.pool)]) {
+  for (const dir of Object.values(paths).map(p => path.dirname(p))) {
     await fs.mkdir(dir, { recursive: true });
   }
 
-  // Load templates and render them
   async function renderTemplate(templateName, data) {
     const templatePath = path.join(new URL(import.meta.url).pathname, '..', 'templates', templateName);
     const template = await fs.readFile(templatePath, 'utf-8');
     return ejs.render(template, data);
   }
 
-  // Create pool.js if missing
   try {
     await fs.access(paths.pool);
   } catch {
@@ -65,83 +65,80 @@ export async function query(text, params) {
   } finally {
     client.release();
   }
-}
-`;
+}`;
     await fs.writeFile(paths.pool, poolTemplate.trim());
     console.log(`✔ Created pool.js`);
   }
 
-  // Render and write query file
-  const queryContent = await renderTemplate('query.ejs', { modelName, ModelName, modelPlural });
-  await fs.writeFile(paths.query, queryContent);
+  const fieldNames = fields.map(f => f.name).join(', ');
+  const placeholders = fields.map((_, i) => `$${i + 1}`).join(', ');
+  const updateSets = fields.map((f, i) => `${f.name} = $${i + 1}`).join(', ');
+  const updateIndex = fields.length + 1;
+  const controllerDestruct = `{ ${fields.map(f => f.name).join(', ')} }`;
+  const fieldList = fieldNames.split(',').map(f => f.trim());
+
+
+  const data = {
+    modelName,
+    ModelName,
+    modelPlural,
+    fieldNames,
+    placeholders,
+    updateSets,
+    updateIndex,
+    fieldList,
+    controllerDestruct
+  };
+
+  await fs.writeFile(paths.query, await renderTemplate('query.ejs', data));
   console.log(`✔ Created query file`);
 
-  // Render and write controller file
-  const controllerContent = await renderTemplate('controller.ejs', { modelName, ModelName, modelPlural });
-  await fs.writeFile(paths.controller, controllerContent);
+  await fs.writeFile(paths.controller, await renderTemplate('controller.ejs', data));
   console.log(`✔ Created controller file`);
 
-  // Render and write routes file
-  const routesContent = await renderTemplate('routes.ejs', { modelName, ModelName, modelPlural });
-  await fs.writeFile(paths.routes, routesContent);
+  await fs.writeFile(paths.routes, await renderTemplate('routes.ejs', data));
   console.log(`✔ Created routes file`);
 
-  // Update or create db.js
-  let dbContent = '';
   try {
-    dbContent = await fs.readFile(paths.db, 'utf-8');
-  } catch {
-    dbContent = '';
-  }
-
-  if (!dbContent.includes(`import ${modelName} from './queries/${modelName}.js'`)) {
-    dbContent = `import ${modelName} from './queries/${modelName}.js';\n` + dbContent;
-  }
-
-  if (!dbContent.includes(`${modelName},`)) {
-    if (dbContent.includes('const db = {')) {
+    let dbContent = await fs.readFile(paths.db, 'utf-8');
+    if (!dbContent.includes(`import ${modelName} from './queries/${modelName}.js'`)) {
+      dbContent = `import ${modelName} from './queries/${modelName}.js';\n` + dbContent;
+    }
+    if (!dbContent.includes(`${modelName},`)) {
       dbContent = dbContent.replace(/const db = \{/, `const db = {\n  ${modelName},`);
-    } else {
-      dbContent += `\nconst db = {\n  ${modelName},\n};\n\nexport default db;\n`;
     }
-  }
-
-  if (!dbContent.includes('export default db;')) {
-    dbContent += `\nexport default db;\n`;
-  }
-
-  await fs.writeFile(paths.db, dbContent);
-  console.log(`✔ Updated db.js`);
-
-  // Update routes index.js
-  let indexContent = '';
-  try {
-    indexContent = await fs.readFile(paths.indexRoutes, 'utf-8');
+    if (!dbContent.includes('export default db;')) {
+      dbContent += `\nexport default db;\n`;
+    }
+    await fs.writeFile(paths.db, dbContent);
+    console.log(`✔ Updated db.js`);
   } catch {
-    indexContent = '';
+    const dbContent = `import ${modelName} from './queries/${modelName}.js';\n\nconst db = {\n  ${modelName},\n};\n\nexport default db;\n`;
+    await fs.writeFile(paths.db, dbContent);
+    console.log(`✔ Created db.js`);
   }
 
-  const importLine = `import ${modelPlural}Routes from './${modelPlural}.js';`;
-  const routeLine = `  app.use(\`/api/\${apiV}/${modelPlural}\`, ${modelPlural}Routes);`;
+  try {
+    let indexContent = await fs.readFile(paths.indexRoutes, 'utf-8');
+    const importLine = `import ${modelPlural}Routes from './${modelPlural}.js';`;
+    const routeLine = `  app.use(\`/api/\${apiV}/${modelPlural}\`, ${modelPlural}Routes);`;
 
-  if (!indexContent.includes(importLine)) {
-    indexContent = importLine + '\n' + indexContent;
-  }
-
-  if (!indexContent.includes(routeLine)) {
-    if (indexContent.includes('function registerRoutes(app, apiV) {')) {
-      indexContent = indexContent.replace(/function registerRoutes\(app, apiV\) \{/, `function registerRoutes(app, apiV) {\n${routeLine}`);
-    } else {
-      indexContent += `\nfunction registerRoutes(app, apiV) {\n${routeLine}\n}\n\nexport default registerRoutes;\n`;
+    if (!indexContent.includes(importLine)) {
+      indexContent = importLine + '\n' + indexContent;
     }
+    if (!indexContent.includes(routeLine)) {
+      indexContent = indexContent.replace(/function registerRoutes\(app, apiV\) \{/, `function registerRoutes(app, apiV) {\n${routeLine}`);
+    }
+    if (!indexContent.includes('export default registerRoutes;')) {
+      indexContent += `\nexport default registerRoutes;\n`;
+    }
+    await fs.writeFile(paths.indexRoutes, indexContent);
+    console.log(`✔ Updated routes/index.js`);
+  } catch {
+    const indexContent = `import ${modelPlural}Routes from './${modelPlural}.js';\n\nfunction registerRoutes(app, apiV) {\n  app.use(\`/api/\${apiV}/${modelPlural}\`, ${modelPlural}Routes);\n}\n\nexport default registerRoutes;\n`;
+    await fs.writeFile(paths.indexRoutes, indexContent);
+    console.log(`✔ Created routes/index.js`);
   }
-
-  if (!indexContent.includes('export default registerRoutes;')) {
-    indexContent += `\nexport default registerRoutes;\n`;
-  }
-
-  await fs.writeFile(paths.indexRoutes, indexContent);
-  console.log(`✔ Updated routes/index.js`);
 
   console.log(`✅ CRUD for model "${ModelName}" generated successfully!`);
 }
@@ -152,10 +149,14 @@ program
   .version('1.0.0');
 
 program
-  .command('create <modelName>')
-  .description('Generate CRUD files for a model')
-  .action((modelNameRaw) => {
-    createModel(modelNameRaw).catch(err => {
+  .command('create <modelName> [fields...]')
+  .description('Generate CRUD files for a model\n\nExample:\n  create author name:string age:int\n')
+  .action((modelNameRaw, fieldsArgs) => {
+    if (!fieldsArgs || fieldsArgs.length === 0) {
+      console.error('❌ Error: You must provide at least one field. Example: create author name:string age:int');
+      process.exit(1);
+    }
+    createModel(modelNameRaw, fieldsArgs).catch(err => {
       console.error('❌ Error:', err.message);
       process.exit(1);
     });
@@ -257,4 +258,4 @@ program
   });
 
 
-  program.parse(process.argv);
+program.parse(process.argv);

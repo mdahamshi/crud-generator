@@ -25,7 +25,7 @@ describe('CRUD Generator CLI', () => {
     const cwd = tempDir;
 
     // Run create command
-    await execAsync(`node ${cliPath} create ${modelName}`, { cwd });
+    await execAsync(`node ${cliPath} create ${modelName} name:string`, { cwd });
 
     // Check if files are created
     const routesExists = await fileExists(path.join(cwd, 'src/routes/testmodels.js'));
