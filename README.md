@@ -8,11 +8,11 @@ A simple CLI tool to **generate CRUD boilerplate code** for a given model with c
 - Quickly scaffold CRUD files for any model
 - Define fields dynamically with types
 - Generates:
-  - SQL schema
-  - Prisma model (optional)
-  - Controller and route files (Express-compatible)
+  - SQL query for CRUD operations 
+  - Controller and route files (Express)
+  - Register routes automaticlly
   - EJS-based code templates
-- Fast, clean, and developer-friendly
+  - Fast, clean, and developer-friendly
 
 ---
 
@@ -54,7 +54,7 @@ src/
 ├── controllers/
 │   └── authorController.js
 ├── routes/
-│   └── authorRoutes.js
+│   └── authors.js
 └── db/
     └── queries/
         └── author.js
