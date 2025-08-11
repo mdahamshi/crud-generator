@@ -22,7 +22,7 @@ const <%= modelName %> = {
     return res.rows[0];
   },
   update: async (params = []) => {
-    const res = await update(queries.create, params);
+    const res = await update(queries.update, params);
     return res.rows[0];
   },
   delete: async (params = []) => {
