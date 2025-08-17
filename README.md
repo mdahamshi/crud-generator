@@ -9,12 +9,18 @@ A simple CLI tool to **generate CRUD boilerplate code** for a given model with c
 - Define fields dynamically with types
 - Generates:
   - SQL query for CRUD operations 
+  - Prisma based CRUD
   - Controller and route files (Express)
   - Register routes automaticlly
   - EJS-based code templates
   - Fast, clean, and developer-friendly
 
 ---
+## ✨ NEW !
+Adds Prisma based queries !
+```bash
+sb-crud-prisma create <ModelName> [fields...]
+````
 
 ## 🛠 Installation
 
@@ -34,6 +40,8 @@ npm install -g sb-crud-gen
 
 ```bash
 sb-crud-gen create <ModelName> [fields...]
+
+sb-crud-prisma create <ModelName> [fields...]
 ```
 
 ### 📌 Examples
