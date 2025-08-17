@@ -47,28 +47,7 @@ async function createModel(modelNameRaw, fieldArgs = []) {
     return ejs.render(template, data);
   }
 
-  try {
-    await fs.access(paths.pool);
-  } catch {
-    const poolTemplate = `
-import { Pool } from 'pg';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL
-});
-
-export async function query(text, params) {
-  const client = await pool.connect();
-  try {
-    const res = await client.query(text, params);
-    return res;
-  } finally {
-    client.release();
-  }
-}`;
-    await fs.writeFile(paths.pool, poolTemplate.trim());
-    console.log(`✔ Created pool.js`);
-  }
 
   const fieldNames = fields.map(f => f.name).join(', ');
   const placeholders = fields.map((_, i) => `$${i + 1}`).join(', ');
