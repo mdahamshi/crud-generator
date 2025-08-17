@@ -7,7 +7,8 @@
     "test": "jest"
   },
   "bin": {
-    "sb-crud-gen": "./index.js"
+    "sb-crud-gen": "./index.js",
+    "sb-crud-prisma": "./index_prisma.js"
   },
   "author": "Mohammad Dahamshi",
   "license": "MIT",

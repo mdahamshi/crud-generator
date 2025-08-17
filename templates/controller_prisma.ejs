@@ -1,0 +1,52 @@
+import db from '../db/db.js';
+
+export const getAll<%= ModelName %>s = async (req, res, next) => {
+  try {
+    const items = await db.<%= modelName %>.getAll();
+    res.json(items);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const get<%= ModelName %>ById = async (req, res, next) => {
+  const id = parseInt(req.params.id);
+  try {
+    const item = await db.<%= modelName %>.getById(id);
+    if (!item) return res.status(404).json({ error: '<%= ModelName %> not found' });
+    res.json(item);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const create<%= ModelName %> = async (req, res, next) => {
+  try {
+    const <%= controllerDestruct %> = req.body;
+    const newItem = await db.<%= modelName %>.create({ <%= fieldList.join(', ') %> });
+    res.status(201).json(newItem);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const update<%= ModelName %> = async (req, res, next) => {
+  const id = parseInt(req.params.id);
+  try {
+    const <%= controllerDestruct %> = req.body;
+    const updatedItem = await db.<%= modelName %>.update(id, { <%= fieldList.join(', ') %> });
+    res.json(updatedItem);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const delete<%= ModelName %> = async (req, res, next) => {
+  const id = parseInt(req.params.id);
+  try {
+    await db.<%= modelName %>.delete(id);
+    res.json({ message: '<%= ModelName %> deleted' });
+  } catch (error) {
+    next(error);
+  }
+};

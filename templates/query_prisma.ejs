@@ -1,0 +1,37 @@
+import { prisma } from "../../utils/prisma";
+
+const <%= modelName %> = {
+  getAll: async () => {
+    return await prisma.<%= modelSingular %>.findMany({
+      orderBy: { id: "asc" },
+    });
+  },
+
+  getById: async (id) => {
+    return await prisma.<%= modelSingular %>.findUnique({
+      where: { id },
+    });
+  },
+
+  create: async (data) => {
+    return await prisma.<%= modelSingular %>.create({
+      data,
+    });
+  },
+
+  update: async (id, data) => {
+    return await prisma.<%= modelSingular %>.update({
+      where: { id },
+      data,
+    });
+  },
+
+  delete: async (id) => {
+    await prisma.<%= modelSingular %>.delete({
+      where: { id },
+    });
+    return { deleted: id };
+  },
+};
+
+export default <%= modelName %>;
