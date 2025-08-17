@@ -1,5 +1,4 @@
-import { prisma } from "../../utils/prisma";
-
+import { prisma } from "../../utils/prisma.js";
 const <%= modelName %> = {
   getAll: async () => {
     return await prisma.<%= modelName %>.findMany({
